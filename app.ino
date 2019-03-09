@@ -77,23 +77,37 @@ class LCDMachine
     private:
         LiquidCrystal * lcd;
         SwitchMachine * modeSwitch;
+        byte backlightPin;
         unsigned long lcdTurnOnTime;
+        bool lcdIsOn;
 
         void showLCD() {
             //
         }
 
+        void turnOnLCD() {
+            lcdIsOn = true;
+            digitalWrite(backlightPin, HIGH);
+        }
+
         void turnOffLCD() {
-            //
+            lcdIsOn = false;
+            digitalWrite(backlightPin, LOW);
         }
 
     public:
-        LCDStates state;
-        LCDMachine(LiquidCrystal * lcd, SwitchMachine * modeSwitch): lcd(lcd), modeSwitch(modeSwitch) {}
+        LCDStates state = DISABLED;
+        LCDMachine(LiquidCrystal * lcd, SwitchMachine * modeSwitch, byte backlightPin):
+            lcd(lcd),
+            modeSwitch(modeSwitch),
+            backlightPin(backlightPin) {
+            lcdIsOn = false;
+        }
 
         void run() {
             switch (state) {
                 case TURNING_ON: {
+                    turnOnLCD();
                     state = DISPLAYING;
                     lcdTurnOnTime = millis();
 
@@ -133,9 +147,10 @@ RTC_DS3231 rtc;
 LiquidCrystal lcdPanel(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
 SwitchMachine modeSwitch(MODE_SWITCH_PIN);
-LCDMachine lcd(&lcdPanel, &modeSwitch);
+LCDMachine lcd(&lcdPanel, &modeSwitch, LCD_BACKLIGHT);
 
 void setup () {
+    pinMode(LCD_BACKLIGHT, OUTPUT);
 }
 
 void loop () {
