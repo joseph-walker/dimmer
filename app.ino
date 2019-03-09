@@ -1,4 +1,6 @@
+#include <RTClib.h>
 #include <LiquidCrystal.h>
+#include <Wire.h>
 
 // Button / Switch Pins
 #define MODE_SWITCH_PIN 13
@@ -127,16 +129,16 @@ class LCDMachine
         }
 };
 
+RTC_DS3231 rtc;
 LiquidCrystal lcdPanel(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
 SwitchMachine modeSwitch(MODE_SWITCH_PIN);
 LCDMachine lcd(&lcdPanel, &modeSwitch);
 
-void setup() {
-    //
+void setup () {
 }
 
-void loop() {
+void loop () {
     modeSwitch.run();
     lcd.run();
 }
